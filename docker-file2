@@ -1,0 +1,36 @@
+#-----------stage 1 start ----------------------------
+ 
+#Base
+FROM python:3.9-slim AS backend-builder
+
+#workdir
+WORKDIR /app
+
+#Copying the contents to the container
+COPY backend/requirements.txt  /app
+
+# INstalling Dependencies
+RUN   pip install flask \
+      && pip install  -r requirements.txt
+
+
+COPY backend/ /app
+
+#------------ Stage 1 Ends---------------------
+
+
+# Start of Stage 2
+
+FROM python:3.12-slim-bookworm
+
+WORKDIR /app
+
+RUN   pip install flask
+
+COPY --from=backend-builder /app  /app
+
+EXPOSE 5000
+
+CMD [ "python","app.py" ]
+
+
